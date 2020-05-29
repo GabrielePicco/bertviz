@@ -25,10 +25,9 @@ import transformers
 from torch import nn
 from torch.nn import CrossEntropyLoss, MSELoss
 from transformers import BertConfig, add_start_docstrings
+from transformers.activations import gelu, swish, gelu_new
 from transformers.file_utils import add_start_docstrings_to_callable
 from transformers.modeling_utils import prune_linear_layer, PreTrainedModel
-
-from bertviz.transformers_neuron_view.activations import gelu, swish, gelu_new
 
 logger = logging.getLogger(__name__)
 
