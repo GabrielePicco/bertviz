@@ -47,11 +47,11 @@ requirejs(['jquery', 'd3'],
       var att = attnData.attn[config.layer][config.head];
 
       $("#vis").empty();
-      var height = config.initialTextLength * BOXHEIGHT * 2 + HEIGHT_PADDING;
+      var height = config.initialTextLength * BOXHEIGHT * 5 + HEIGHT_PADDING;
       var svg = d3.select("#vis")
         .append('svg')
         .attr("width", WIDTH)
-        .attr("height", height);
+        .attr("height", 10000);
 
       renderVisExpanded(svg, leftText, rightText, queries, keys);
       renderVisCollapsed(svg, leftText, rightText, att);

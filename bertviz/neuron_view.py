@@ -27,10 +27,31 @@ import json
 from IPython.core.display import display, HTML, Javascript
 import os
 import torch
+from os.path import expanduser
 from collections import defaultdict
 
 
-def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sentence_a=None, sentence_b=None, sentence_b_embedding=None):
+def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sentence_a=None, sentence_b=None, sentence_b_embedding=None, file_name="attn_visualization"):
+    html_page = """
+    <html><head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js"></script>
+        <script>
+          requirejs.config({
+            paths: {
+              base: '/static/base',
+              "d3": "https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min",
+              jquery: 'https://code.jquery.com/jquery-2.0.0.min',
+            },
+          });
+        </script>
+        </head>
+        <body>
+            {0}
+            {1}
+            {2}
+        </body>
+    </html>
+    """
     if sentence_b:
         vis_html = """
           <span style="user-select:none">
@@ -54,7 +75,7 @@ def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sente
           </span>
           <div id='vis'></div>
         """
-    display(HTML(vis_html))
+    #display(HTML(vis_html))
     __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
     vis_js = open(os.path.join(__location__, 'neuron_view.js')).read()
@@ -68,8 +89,17 @@ def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sente
         'default_filter': "ab",
         'bidirectional': bidirectional
     }
-    display(Javascript('window.params = %s' % json.dumps(params)))
-    display(Javascript(vis_js))
+    #display(Javascript('window.params = %s' % json.dumps(params)))
+    #display(Javascript(vis_js))
+    # print to an HTML file
+    html_page = html_page.replace("{0}", vis_html)
+    html_page = html_page.replace("{1}", '<script>' + 'window.params = %s' % json.dumps(params) + '</script>')
+    html_page = html_page.replace("{2}", '<script>' + vis_js + '</script>')
+    home = expanduser("~")
+    file_path = os.path.join(home, file_name + ".html")
+    with open(file_path, "w+") as f:
+        f.write(html_page)
+    return "file://" + str(file_path)
 
 
 def get_attention(attn_data_list=None, model=None, model_type=None, tokenizer=None, sentence_a=None, sentence_b=None, sentence_b_embedding=None, include_queries_and_keys=False):
