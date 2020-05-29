@@ -37,11 +37,11 @@ def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sente
             Layer: <select id="layer"></select>
             Head: <select id="att_head"></select>
             Attention: <select id="filter">
-              <!-- <option value="all">All</option>  -->
-              <!-- <option value="aa">Sentence A -> Sentence A</option> -->
+              <option value="all">All</option>
+              <option value="aa">Sentence A -> Sentence A</option>
               <option value="ab">Sentence A -> Sentence B</option>
               <option value="ba">Sentence B -> Sentence A</option>
-              <!-- <option value="bb">Sentence B -> Sentence B</option> -->
+              <option value="bb">Sentence B -> Sentence B</option>
             </select>
           </span>
           <div id='vis'></div>
@@ -65,7 +65,7 @@ def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sente
         bidirectional = True
     params = {
         'attention': attn_data,
-        'default_filter': "all",
+        'default_filter': "ab",
         'bidirectional': bidirectional
     }
     display(Javascript('window.params = %s' % json.dumps(params)))
