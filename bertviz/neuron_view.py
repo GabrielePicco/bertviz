@@ -30,7 +30,7 @@ import torch
 from collections import defaultdict
 
 
-def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sentence_a=None, sentence_b=None):
+def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sentence_a=None, sentence_b=None, sentence_b_embedding=None):
     if sentence_b:
         vis_html = """
           <span style="user-select:none">
@@ -38,10 +38,10 @@ def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sente
             Head: <select id="att_head"></select>
             Attention: <select id="filter">
               <option value="all">All</option>
-              <option value="aa">Sentence A -> Sentence A</option>
+              <!-- <option value="aa">Sentence A -> Sentence A</option> -->
               <option value="ab">Sentence A -> Sentence B</option>
               <option value="ba">Sentence B -> Sentence A</option>
-              <option value="bb">Sentence B -> Sentence B</option>
+              <!-- <option value="bb">Sentence B -> Sentence B</option> -->
             </select>
           </span>
           <div id='vis'></div>
@@ -58,7 +58,7 @@ def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sente
     __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__)))
     vis_js = open(os.path.join(__location__, 'neuron_view.js')).read()
-    attn_data = get_attention(attn_data_list, model, model_type, tokenizer, sentence_a, sentence_b, include_queries_and_keys=True)
+    attn_data = get_attention(attn_data_list, model, model_type, tokenizer, sentence_a, sentence_b, sentence_b_embedding, include_queries_and_keys=True)
     if model_type == 'gpt2':
         bidirectional = False
     else:
@@ -72,7 +72,7 @@ def show(attn_data_list=None, model=None, model_type=None, tokenizer=None, sente
     display(Javascript(vis_js))
 
 
-def get_attention(attn_data_list=None, model=None, model_type=None, tokenizer=None, sentence_a=None, sentence_b=None, include_queries_and_keys=False):
+def get_attention(attn_data_list=None, model=None, model_type=None, tokenizer=None, sentence_a=None, sentence_b=None, sentence_b_embedding=None, include_queries_and_keys=False):
     """Compute representation of attention to pass to the d3 visualization
 
     Args:
@@ -106,7 +106,7 @@ def get_attention(attn_data_list=None, model=None, model_type=None, tokenizer=No
         raise ValueError("Invalid model type:", model_type)
     if not sentence_a:
         raise ValueError("Sentence A is required")
-    is_sentence_pair = bool(sentence_b)
+    is_sentence_pair = bool(sentence_b) or bool(sentence_b_embedding)
     if is_sentence_pair and model_type not in ('bert', 'roberta', 'xlnet'):
         raise ValueError(f'Model {model_type} does not support sentence pairs')
     if is_sentence_pair and model_type == 'xlnet':
